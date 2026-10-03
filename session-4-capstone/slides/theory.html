@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 4 — Full Application &amp; Next Steps</title>
+<link rel="stylesheet" href="../../assets/deck.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide">
+<div class="kicker">Kubernetes 101 &middot; Session 4 of 4</div>
+<h1>The map of<br>the territory</h1>
+<p class="sub">What you can do now, what comes next, where to go alone.</p>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+<h2>Eight hours ago&hellip;</h2>
+<div class="cols-3">
+  <div class="panel"><span class="glyph">📦</span><p>containerise an app</p></div>
+  <div class="panel"><span class="glyph">📄</span><p>read &amp; write manifests</p></div>
+  <div class="panel"><span class="glyph">🚀</span><p>deploy, scale, update, roll back</p></div>
+  <div class="panel"><span class="glyph">🔌</span><p>expose &amp; configure it</p></div>
+  <div class="panel"><span class="glyph">🏗️</span><p>a two-tier app, talking by name</p></div>
+  <div class="panel accent"><span class="glyph">🔍</span><p><strong>diagnose</strong> real failures</p></div>
+</div>
+<p class="punch">A real foundation. <em>Honestly, the first 10%.</em></p>
+<div class="notes">Say the 10% line warmly, not deflatingly — the point is that the remaining 90% is now reachable, because they can read the docs unaided.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+<h2>What you built today</h2>
+<svg class="dia" viewBox="0 0 1000 400" role="img" aria-label="Browser to NodePort to frontend Deployment to backend Service by DNS name to backend Deployment, configured by a ConfigMap">
+  <rect x="20" y="120" width="130" height="150" rx="14" class="fill-panel stroke-line"/>
+  <text x="85" y="186" class="lbl" text-anchor="middle">🌍</text>
+  <text x="85" y="216" class="sm" text-anchor="middle">browser</text>
+  <path d="M158 195 H182" class="stroke-accent nofill"/>
+  <path d="M176 187 l14 8 l-14 8 z" fill="var(--accent)"/>
+
+  <rect x="190" y="120" width="140" height="150" rx="14" class="fill-warn stroke-line"/>
+  <text x="260" y="180" class="lbl" text-anchor="middle">NodePort</text>
+  <text x="260" y="208" class="mono" text-anchor="middle">:30080</text>
+  <path d="M338 195 H362" class="stroke-accent nofill"/>
+  <path d="M356 187 l14 8 l-14 8 z" fill="var(--accent)"/>
+
+  <rect x="370" y="106" width="210" height="178" rx="16" class="fill-soft stroke-accent"/>
+  <text x="475" y="136" class="lbl accent-txt" text-anchor="middle">frontend</text>
+  <text x="475" y="158" class="tiny" text-anchor="middle">Deployment</text>
+  <rect x="392" y="176" width="76" height="76" rx="10" class="fill-panel stroke-line"/>
+  <text x="430" y="220" class="sm" text-anchor="middle">Pod</text>
+  <rect x="482" y="176" width="76" height="76" rx="10" class="fill-panel stroke-line"/>
+  <text x="520" y="220" class="sm" text-anchor="middle">Pod</text>
+
+  <path d="M588 195 H612" class="stroke-accent nofill"/>
+  <path d="M606 187 l14 8 l-14 8 z" fill="var(--accent)"/>
+  <text x="600" y="92" class="mono accent-txt" text-anchor="middle">http://backend:5000</text>
+
+  <rect x="620" y="120" width="140" height="150" rx="14" class="fill-soft stroke-accent"/>
+  <text x="690" y="180" class="lbl accent-txt" text-anchor="middle">Service</text>
+  <text x="690" y="206" class="tiny" text-anchor="middle">ClusterIP &middot; by DNS</text>
+  <path d="M768 195 H792" class="stroke-accent nofill"/>
+  <path d="M786 187 l14 8 l-14 8 z" fill="var(--accent)"/>
+
+  <rect x="800" y="106" width="180" height="178" rx="16" class="fill-soft stroke-accent"/>
+  <text x="890" y="136" class="lbl accent-txt" text-anchor="middle">backend</text>
+  <text x="890" y="158" class="tiny" text-anchor="middle">Deployment</text>
+  <rect x="816" y="176" width="70" height="76" rx="10" class="fill-panel stroke-line"/>
+  <text x="851" y="220" class="sm" text-anchor="middle">Pod</text>
+  <rect x="896" y="176" width="70" height="76" rx="10" class="fill-panel stroke-line"/>
+  <text x="931" y="220" class="sm" text-anchor="middle">Pod</text>
+
+  <rect x="800" y="312" width="180" height="60" rx="12" class="fill-panel stroke-line"/>
+  <text x="890" y="349" class="lbl" text-anchor="middle">ConfigMap</text>
+  <path d="M890 306 V292" class="stroke-accent dash nofill"/>
+  <path d="M882 298 l8 -14 l8 14 z" fill="var(--accent)"/>
+
+  <text x="20" y="394" class="sm" text-anchor="start">images &middot; Pods &middot; Deployments &middot; Services &middot; DNS &middot; configuration — all four sessions, one picture</text>
+</svg>
+<div class="notes">Ask: which single object could you delete to break this, and how would you diagnose it? That is the bridge straight into the debugging recap.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+<h2>The debugging habit</h2>
+<div class="flow">
+  <div class="node lg accent"><b>get</b><small>what state?</small></div>
+  <div class="arrow">&rarr;</div>
+  <div class="node lg accent"><b>describe</b><small>read the <em>Events</em></small></div>
+  <div class="arrow">&rarr;</div>
+  <div class="node lg accent"><b>logs</b><small><code>--previous</code> if it crashed</small></div>
+</div>
+<table>
+  <tr><th>Symptom</th><th>Usually means</th></tr>
+  <tr><td><code>Pending</code></td><td>No node fits it &mdash; requests too big, or a volume isn't bound</td></tr>
+  <tr><td><code>ImagePullBackOff</code></td><td>Wrong image name or tag, or not loaded into the cluster</td></tr>
+  <tr><td><code>CrashLoopBackOff</code></td><td>It starts and exits &mdash; read the logs, it's your app</td></tr>
+  <tr><td>Service returns nothing</td><td>Selector matches no Pod, or wrong <code>targetPort</code></td></tr>
+</table>
+<div class="ref"><a href="https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/" target="_blank" rel="noopener">Debug Pods</a> &middot; <a href="https://learnkube.com/troubleshooting-deployments" target="_blank" rel="noopener">A visual troubleshooting flowchart</a></div>
+<div class="notes">The Events at the bottom of `describe` hold the answer most of the time. Drill the order — this table is the one slide worth photographing.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+<div class="kicker">Recap &middot; Session 3</div>
+<h2>Probes: what &ldquo;healthy&rdquo; means</h2>
+<div class="cols-3">
+  <div class="panel accent">
+    <h3>readiness</h3>
+    <p class="lead">can I take traffic?</p>
+    <p>fails &rarr; <strong>removed from the Service</strong><br><span class="muted">not restarted</span></p>
+  </div>
+  <div class="panel">
+    <h3>liveness</h3>
+    <p class="lead">am I stuck?</p>
+    <p>fails &rarr; <strong>container restarted</strong></p>
+  </div>
+  <div class="panel">
+    <h3>startup</h3>
+    <p class="lead">am I still booting?</p>
+    <p>protects slow starters<br><span class="muted">from the other two</span></p>
+  </div>
+</div>
+<div class="callout good">Readiness is what makes a rolling update <strong>genuinely</strong> zero-downtime. Learn this next.</div>
+<div class="ref"><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" target="_blank" rel="noopener">Configure probes</a></div>
+<div class="notes">Seen in Session 3 — thirty seconds of recap, then challenge them: add a readiness probe to the capstone backend as homework. The gap to restate: without probes, Kubernetes only knows the process is alive, not that the app works.</div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+<div class="kicker">Recap &middot; Session 3</div>
+<h2>Requests and limits</h2>
+<div class="cols">
+  <div>
+<pre><code>resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi</code></pre>
+  </div>
+  <div>
+    <div class="panel accent"><h3>requests</h3><p><strong>placement</strong> &mdash; what the scheduler reserves</p><p class="muted">too big &rarr; <code>Pending</code> forever <em>(you saw this)</em></p></div>
+    <div class="panel bad" style="margin-top:.7em"><h3 style="color:var(--bad)">limits</h3><p><strong>enforcement</strong> &mdash; the ceiling</p><p class="muted">over memory &rarr; <code>OOMKilled</code></p></div>
+  </div>
+</div>
+<p class="punch">No requests = <em>the scheduler is guessing.</em></p>
+<div class="ref"><a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" target="_blank" rel="noopener">Resource management</a></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+<div class="kicker">Next step 1</div>
+<h2>By default, every Pod can reach every Pod</h2>
+<svg class="dia" viewBox="0 0 1000 300" style="max-height:38vh" role="img" aria-label="Left: all pods interconnected by default. Right: a NetworkPolicy restricting traffic to one path">
+  <text x="250" y="30" class="lbl bad-txt" text-anchor="middle">default &mdash; wide open</text>
+  <g class="stroke-bad nofill">
+    <path d="M130 120 L370 120"/><path d="M130 120 L250 240"/><path d="M370 120 L250 240"/>
+    <path d="M130 120 L370 240"/><path d="M370 120 L130 240"/><path d="M130 240 L370 240"/>
+  </g>
+  <circle cx="130" cy="120" r="34" class="fill-bad stroke-bad"/><text x="130" y="126" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="370" cy="120" r="34" class="fill-bad stroke-bad"/><text x="370" y="126" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="130" cy="240" r="34" class="fill-bad stroke-bad"/><text x="130" y="246" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="370" cy="240" r="34" class="fill-bad stroke-bad"/><text x="370" y="246" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="250" cy="240" r="34" class="fill-bad stroke-bad"/><text x="250" y="246" class="sm" text-anchor="middle">Pod</text>
+
+  <text x="750" y="30" class="lbl ok-txt" text-anchor="middle">with a NetworkPolicy</text>
+  <g class="stroke-ok nofill">
+    <path d="M630 120 L870 120"/><path d="M870 120 L750 240"/>
+  </g>
+  <circle cx="630" cy="120" r="34" class="fill-ok stroke-ok"/><text x="630" y="126" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="870" cy="120" r="34" class="fill-ok stroke-ok"/><text x="870" y="126" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="630" cy="240" r="34" class="fill-panel stroke-line"/><text x="630" y="246" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="870" cy="240" r="34" class="fill-panel stroke-line"/><text x="870" y="246" class="sm" text-anchor="middle">Pod</text>
+  <circle cx="750" cy="240" r="34" class="fill-ok stroke-ok"/><text x="750" y="246" class="sm" text-anchor="middle">Pod</text>
+</svg>
+<div class="cols-3">
+  <div class="panel"><strong>RBAC</strong><br><span class="muted">who may touch what</span></div>
+  <div class="panel"><strong>ServiceAccounts</strong><br><span class="muted">your Pods' identity</span></div>
+  <div class="panel"><strong>Secrets, properly</strong><br><span class="muted">encrypted at rest, never in git</span></div>
+</div>
+<div class="ref"><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/" target="_blank" rel="noopener">RBAC</a></div>
+<div class="notes">That default-open network is the fact most people learn far too late. Now they know it. RBAC = Roles and RoleBindings; ServiceAccounts are the identity Pods use against the API server.</div>
+</section>
+
+<!-- 7b -->
+<section class="slide">
+<div class="kicker">Next step 1 &middot; the object</div>
+<h2>Default-deny, then allow one path</h2>
+<div class="cols" style="align-items:stretch">
+  <div class="box">
+    <span class="label">1 &mdash; shut the namespace</span>
+    <pre><code>kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  <span class="hl">podSelector: {}</span>        <span class="muted"># every Pod here</span>
+  policyTypes: [Ingress]  <span class="muted"># &hellip;accepts nothing</span></code></pre>
+    <p class="sm muted">An empty <code>podSelector</code> means <em>all</em> Pods in the namespace. No <code>ingress:</code> rules means no traffic allowed in.</p>
+  </div>
+  <div class="box">
+    <span class="label">2 &mdash; open exactly one door</span>
+    <pre><code>kind: NetworkPolicy
+metadata:
+  name: frontend-to-backend
+spec:
+  podSelector:
+    matchLabels: {app: <span class="hl">backend</span>}
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels: {app: <span class="hl">frontend</span>}</code></pre>
+    <p class="sm muted">Labels again &mdash; the same glue as Services. Policies are <strong>additive</strong>: they only ever allow.</p>
+  </div>
+</div>
+<div class="callout warn">A NetworkPolicy is <strong>an object, not an enforcer</strong>. Your <em>CNI plugin</em> does the enforcing &mdash; and if it doesn't implement NetworkPolicy, the API server still accepts your YAML and <strong>nothing changes</strong>. No error, no warning, no protection. Check your CNI before you trust a policy.</div>
+<div class="ref"><a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/" target="_blank" rel="noopener">Network Policies</a></div>
+<div class="notes">This is the slide that saves them a bad afternoon. The failure mode is silent: `kubectl apply` succeeds, `kubectl get netpol` lists the policy, and traffic flows exactly as before because the CNI ignores it. Say plainly that our kind cluster is one of the environments where this can happen &mdash; which is why there is no NetworkPolicy lab today, and why the first thing to do on a real cluster is verify enforcement with a deliberate curl that *should* fail. Two ideas to land: default-deny first then allow (allow-listing, not block-listing), and policies are additive &mdash; there is no "deny" rule, so you cannot punch a hole by accident, only forget to open one. Namespace-scoped, like almost everything else (Session 2).</div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+<div class="kicker">Next step 2</div>
+<h2>You won't write raw YAML forever</h2>
+<div class="cols">
+  <div class="panel">
+    <h3>Packaging</h3>
+    <p class="lead"><strong>Helm</strong></p><p class="muted">templated, versioned charts &mdash; a database in one command</p>
+    <p class="lead"><strong>Kustomize</strong></p><p class="muted">built into kubectl &mdash; per-environment patches over a base</p>
+  </div>
+  <div class="panel accent">
+    <h3>GitOps</h3>
+    <p class="lead"><strong>Argo CD</strong> &middot; <strong>Flux</strong></p>
+    <div class="flow" style="margin:.6em 0">
+      <div class="node">git</div>
+      <div class="arrow">&rarr;<small>reconcile</small></div>
+      <div class="node accent">cluster</div>
+    </div>
+    <p class="punch" style="font-size:clamp(1rem,1.8vw,1.4rem)">Session 2's loop, applied to your whole platform.</p>
+  </div>
+</div>
+<div class="ref"><a href="https://helm.sh/docs/" target="_blank" rel="noopener">Helm docs</a> &middot; <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/" target="_blank" rel="noopener">Kustomize</a> &middot; <a href="https://argo-cd.readthedocs.io/" target="_blank" rel="noopener">Argo CD docs</a></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+<div class="kicker">Next step 3</div>
+<h2>Real clusters</h2>
+<table>
+  <tr><th></th><th>Managed &mdash; EKS / AKS / GKE</th><th>Self-hosted</th></tr>
+  <tr><td>Control plane</td><td>Operated by the provider</td><td>Yours to run, patch, back up</td></tr>
+  <tr><td>Good for</td><td>Almost everyone</td><td>On-prem, sovereignty, cost at scale</td></tr>
+  <tr><td>You still own</td><td>Workloads, config, security, cost</td><td>&hellip;and everything else</td></tr>
+</table>
+<svg class="dia" viewBox="0 0 1000 210" style="max-height:26vh" role="img" aria-label="Shared responsibility: on a managed cluster the provider runs the control plane and nodes, you own workloads, config, security and cost">
+  <text x="500" y="26" class="lbl" text-anchor="middle">managed cluster &mdash; who runs what</text>
+  <rect x="40" y="44" width="920" height="60" rx="12" class="fill-soft stroke-soft"/>
+  <text x="70" y="80" class="sm accent-txt" text-anchor="start">provider</text>
+  <text x="530" y="80" class="sm" text-anchor="middle">control plane &middot; etcd &middot; nodes &middot; upgrades</text>
+  <rect x="40" y="118" width="920" height="60" rx="12" class="fill-panel stroke-accent"/>
+  <text x="70" y="154" class="sm accent-txt" text-anchor="start">you</text>
+  <text x="530" y="154" class="sm" text-anchor="middle">workloads &middot; manifests &middot; config &amp; Secrets &middot; RBAC &middot; cost</text>
+  <text x="500" y="202" class="tiny" text-anchor="middle">self-hosted: both rows are yours</text>
+</svg>
+<p class="punch">Your kind cluster and a production EKS speak <em>the same API.</em></p>
+<div class="notes">Everything they learned transfers unchanged — that is the reassurance to end the technical part on. The two-row picture is the "managed" pitch in one glance: the provider takes the bottom of the stack, the top row never goes away.</div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+<h2>Where to go from here</h2>
+<ol>
+  <li><a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/" target="_blank" rel="noopener">Official Kubernetes Basics</a> <span class="muted">&middot; consolidate this week</span></li>
+  <li><a href="https://killercoda.com/" target="_blank" rel="noopener">Killercoda</a> <span class="muted">&middot; free browser scenarios, nothing to install</span></li>
+  <li><strong>Redo the capstone from memory</strong> <span class="muted">&middot; the highest-value hour you can spend</span></li>
+  <li>Then add to the capstone: probes &amp; limits <span class="muted">(Session 3)</span> &rarr; an Ingress <span class="muted">(the bonus lab, if you skipped it)</span> or an HTTPRoute &rarr; a NetworkPolicy &rarr; a Helm chart</li>
+  <li><a href="https://www.cncf.io/training/certification/ckad/" target="_blank" rel="noopener">CKAD</a> <span class="muted">&middot; realistic ~3 months out, and it's hands-on</span></li>
+</ol>
+<div class="callout"><code>kubectl explain</code> and the official docs <strong>before</strong> any blog post. You already know how to read them.</div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+<h1>Thank you</h1>
+<p class="lead">Questions &mdash; then the quiz.</p>
+<p class="sub">Cloud Native Dakar &middot; Kubernetes 101</p>
+</section>
+
+</div>
+<footer>
+  <span class="hint">&larr; &rarr; navigate &middot; N notes &middot; F fullscreen &middot; Ctrl/Cmd+P export PDF</span>
+  <span><span id="cur">1</span> / <span id="tot">1</span></span>
+</footer>
+<script src="../../assets/deck.js"></script>
+</body>
+</html>

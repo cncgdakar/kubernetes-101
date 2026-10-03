@@ -1,0 +1,38 @@
+# Backend: Deployment (2 replicas, Flask on port 5000) + ClusterIP Service named "backend"
+# Fill every TODO. Validate with:  kubectl apply --dry-run=client -f 01-backend.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: TODO            # how many copies?
+  selector:
+    matchLabels:
+      app: TODO             # which Pods does this Deployment own?
+  template:
+    metadata:
+      labels:
+        app: TODO           # MUST be identical to the selector above
+    spec:
+      containers:
+        - name: backend
+          image: TODO       # built locally as capstone-backend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: TODO     # the port the Flask app listens on
+          envFrom:
+            - configMapRef:
+                name: TODO            # the ConfigMap from 03-configmap.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: TODO                # the frontend calls http://backend:5000 — name it accordingly
+spec:
+  type: ClusterIP           # internal only: nothing outside the cluster needs it
+  selector:
+    app: TODO               # which Pods receive the traffic?
+  ports:
+    - port: TODO            # the port the SERVICE listens on
+      targetPort: TODO      # the port the CONTAINER listens on

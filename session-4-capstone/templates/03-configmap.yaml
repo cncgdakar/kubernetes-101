@@ -1,0 +1,9 @@
+# ConfigMap consumed by the backend as environment variables (envFrom in 01-backend.yaml).
+# Keys become variable names, values become their values — no quotes needed for simple strings.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: TODO                # 01-backend.yaml references this name
+data:
+  APP_ENV: TODO             # the brief asks for "training"
+  # Add another key here and read it in the backend to prove config is decoupled from the image.

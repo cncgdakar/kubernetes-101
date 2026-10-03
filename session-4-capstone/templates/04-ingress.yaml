@@ -1,0 +1,34 @@
+# BONUS — one entry point instead of a NodePort.
+#
+# Goal:   http://localhost:8080/           -> frontend Service (port 80)
+#         http://localhost:8080/api/info   -> backend  Service (port 5000)
+#
+# Note what changes: until now the frontend's nginx proxied /api/ to the backend for you.
+# The Ingress takes that job over — routing stops being the app's problem.
+#
+# Apply this BEFORE you install a controller. Watching it do nothing is step 1 of the lab.
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capstone
+spec:
+  ingressClassName: TODO          # what did `kubectl get ingressclass` show?
+  rules:
+    - http:
+        paths:
+          # Most specific path first.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: TODO        # which Service answers /api/info itself?
+                port:
+                  number: TODO
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: TODO
+                port:
+                  number: TODO

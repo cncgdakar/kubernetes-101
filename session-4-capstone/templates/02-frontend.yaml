@@ -1,0 +1,36 @@
+# Frontend: Deployment (2 replicas, nginx on port 80) + NodePort Service on 30080
+# The nginx image already proxies /api/ to http://backend:5000 — you don't configure that here.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: TODO
+  selector:
+    matchLabels:
+      app: TODO
+  template:
+    metadata:
+      labels:
+        app: TODO           # MUST match the selector
+    spec:
+      containers:
+        - name: frontend
+          image: TODO       # built locally as capstone-frontend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: TODO     # nginx listens on...?
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: TODO                # must be reachable from your browser
+  selector:
+    app: TODO
+  ports:
+    - port: 80
+      targetPort: TODO
+      nodePort: TODO        # the cluster maps host port 30080 to the node

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>K8s 101 Capstone</title></head>
+<body style="font-family: sans-serif; max-width: 600px; margin: 3rem auto;">
+  <h1>Kubernetes 101 — Capstone</h1>
+  <p>Backend says: <strong id="msg">loading…</strong></p>
+  <pre id="detail"></pre>
+  <script>
+    fetch('/api/info')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('msg').textContent = d.message;
+        document.getElementById('detail').textContent = JSON.stringify(d, null, 2);
+      })
+      .catch(e => document.getElementById('msg').textContent = 'backend unreachable: ' + e);
+  </script>
+</body>
+</html>

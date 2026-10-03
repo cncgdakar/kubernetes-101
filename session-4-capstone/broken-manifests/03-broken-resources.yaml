@@ -1,0 +1,22 @@
+# Symptom to find: Pod stuck in Pending
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-3
+  template:
+    metadata:
+      labels:
+        app: debug-3
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27
+          resources:
+            requests:
+              cpu: "64"        # <-- 64 CPUs requested
+              memory: 256Gi

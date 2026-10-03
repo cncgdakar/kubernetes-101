@@ -1,0 +1,31 @@
+# Symptom to find: the Service answers nothing / connection refused
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-2
+  template:
+    metadata:
+      labels:
+        app: debug-2
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: debug-2
+spec:
+  selector:
+    app: debug2        # <-- check me
+  ports:
+    - port: 80
+      targetPort: 8080 # <-- and me
